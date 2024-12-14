@@ -1,5 +1,8 @@
 from datetime import datetime, timedelta
 from models.product import Product
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from models.base import Base
 
 class TrendDetector:
     def __init__(self, session):

@@ -20,29 +20,40 @@ def generate_test_data():
         }
     ]
 
+    # Get current timestamp for consistent dates
+    now = datetime.now()
+    
     # Generate 30 days of historical data
     for day in range(30):
-        current_date = datetime.now() - timedelta(days=30-day)
+        current_date = now - timedelta(days=30-day)
         
         for base_product in base_products:
-            # Your existing test data generation logic
+            # Calculate order count based on pattern
             if base_product["growth_pattern"] == "rising":
                 order_count = int(50 + (day * 2) + random.randint(-5, 5))
             elif base_product["growth_pattern"] == "seasonal":
                 order_count = int(40 + (math.sin(day/7 * math.pi) * 20) + random.randint(-5, 5))
             
+            # Ensure order_count is never negative
+            order_count = max(0, order_count)
+            
+            # Calculate price with variation
             price = base_product["base_price"] * (1 + random.uniform(-0.1, 0.1))
             
+            # Calculate review count and ensure it's not negative
+            review_count = max(0, int(order_count * 0.3))
+            
+            # Create product instance
             product = Product(
                 product_id=base_product["product_id"],
                 product_name=base_product["product_name"],
-                order_count=max(0, order_count),
-                price=price,
-                review_count=int(order_count * 0.3),
-                rating=random.uniform(3.5, 5.0),
+                order_count=order_count,
+                price=round(price, 2),
+                review_count=review_count,
+                rating=round(random.uniform(3.5, 5.0), 1),
                 timestamp=current_date,
                 daily_order_velocity=order_count,
-                price_to_order_ratio=price/order_count if order_count > 0 else 0
+                price_to_order_ratio=round(price/order_count if order_count > 0 else 0, 2)
             )
             products.append(product)
 
